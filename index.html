@@ -1,0 +1,111 @@
+<html>
+
+	<head>
+		<style type="text/css">
+			body {
+				background: #000;
+				color: #fff;
+				text-align: center;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+			}
+			#x {
+				background: #000;
+				color: #555;
+				height: 6em;
+				font: bold 34pt Andale Mono;
+				width: 100%; height: 100%;
+				margin: 0; padding: 0; border: 0;
+			}
+			#measure, #displayer {
+				display: inline-block;
+				font: bold 15pt "Helvetica Neue", sans-serif;
+				z-index: 5;
+			}
+			#measure {
+				visibility: hidden;
+			}
+			#rotat {
+				-moz-transform: rotate(-90deg);
+				-webkit-transform: rotate(-90deg);
+				background: #000;
+				margin: 0 auto;
+			}
+			#displayer {
+				-moz-transform-origin: top center;
+				-webkit-transform-origin: top center;
+				text-shadow: 0 0 0.5em #fff;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<textarea id="x">Type
+And
+Tilt</textarea>
+		<div id="rotat">
+		<div id="pdd">
+			<div id="displayer">measure!</div>
+		</div>
+		</div>
+		<div>
+			<div id="measure">measure!</div>
+		</div>
+		<script type="text/javascript">
+
+			var ta = document.getElementById('x');
+			var rt = document.getElementById('rotat');
+			var pd = document.getElementById('pdd');
+			var dp = document.getElementById('displayer');
+			var ms = document.getElementById('measure');
+			var md = 0;
+			var rtz = 1;
+
+			function switchMode() {
+				md ++;
+				md %= 2;
+				if ((md % 2) == 1) {
+					dp.innerHTML = ms.innerHTML = ta.value.replace(/\n/g, '<br />');
+					var scale = Math.min(
+						window.innerWidth / ms.offsetHeight,
+						window.innerHeight / ms.offsetWidth) * 0.9;
+					dp.style.MozTransform =
+					dp.style.WebkitTransform = 'scale(' + scale + ')';
+					rt.style.width = window.innerHeight + 'px';
+					rt.style.height = window.innerWidth + 'px';
+					rt.style.MozTransform =
+					rt.style.WebkitTransform = 'rotate(' + (-90 * rtz) + 'deg)';
+					rt.style.marginTop = (window.innerHeight - window.innerWidth) / 2 + 'px';
+					pd.style.paddingTop = (window.innerWidth - ms.offsetHeight * scale) / 2;
+					ta.style.display = 'none';
+					dp.style.display = 'block';
+				} else {
+					dp.style.display = 'none';
+					ta.style.display = 'block';
+					ta.focus ();
+					ta.select ();
+				}
+			}
+
+			window.onclick = function() {
+				//switchMode ();
+			};		
+			window.addEventListener("deviceorientation", function(e) {
+				document.title = e.gamma + ':'
+				if (Math.abs(e.gamma) < 30 && md == 1) {
+					switchMode ();
+				} else if (Math.abs(e.gamma) > 45 && md == 0) {
+					rtz = (e.gamma < 0) ? -1 : 1;
+					switchMode ();
+				}
+			}, true);
+			switchMode ();
+			switchMode ();
+
+		</script>
+
+	</body>
+
+</html>
